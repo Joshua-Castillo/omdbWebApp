@@ -1,45 +1,5 @@
 const form = document.querySelector('#searchForm');
 
-nominees = new Array(0);
-const hasFiveNominees = (array) =>{
-    if(array.length()===5) return true;
-    else return false;
-}
-const printNominees = () => {
-    if (document.getElementById("nomineeList")){
-        document.getElementById("nomineeList").remove();
-    }
-    if (document.getElementById("removeYourNomineesText")){
-        document.getElementById("removeYourNomineesText").remove();
-    }
-
-    const yourNomineesText = document.createElement('H1');
-    document.body.append(yourNomineesText);
-    yourNomineesText.innerHTML = "You Nominees";
-    yourNomineesText.setAttribute("id", "removeYourNomineesText");
-    yourNomineesText.classList.add('mx-5');
-    yourNomineesText.classList.add('my-5');
-    const cardGroup = document.createElement('DIV');
-    document.body.append(cardGroup);        
-
-    cardGroup.setAttribute("id", "nomineeList");
-
-    cardGroup.classList.add('card-group');
-    cardGroup.classList.add('m-5');
-    cardGroup.classList.add('shadow-lg');
-    cardGroup.classList.add('p-5');
-    cardGroup.classList.add('pg-white');
-    cardGroup.classList.add('rounded');
-    cardGroup.classList.add('gap-3');
-
-    for(let [i, each] of nominees.entries()){
-        
-        const nominee = new Nominee(each);
-        nominee.printNomineeCard(cardGroup);
-    }
-}
-
-
 form.addEventListener('submit', async function(e){
     e.preventDefault();
     const searchTerm = form.elements.query.value;
@@ -53,7 +13,8 @@ form.addEventListener('submit', async function(e){
     const res = await axios.get(`http://www.omdbapi.com/?s=${searchTerm}&apikey=10e873c6`);
     console.log(res.data.Search[0]);
     removePrior();
-    listCandidates(res.data.Search);   
+    listCandidates(res.data.Search);
+
 });
 
 const listCandidates = (Search) => {
@@ -101,6 +62,44 @@ const listCandidates = (Search) => {
     
 
 }
+
+nominees = new Array(0);
+
+const printNominees = () => {
+    if (document.getElementById("nomineeList")){
+        document.getElementById("nomineeList").remove();
+    }
+    if (document.getElementById("removeYourNomineesText")){
+        document.getElementById("removeYourNomineesText").remove();
+    }
+
+    const yourNomineesText = document.createElement('H1');
+    document.body.append(yourNomineesText);
+    yourNomineesText.innerHTML = "Your Nominees";
+    yourNomineesText.setAttribute("id", "removeYourNomineesText");
+    yourNomineesText.classList.add('mx-5');
+    yourNomineesText.classList.add('my-5');
+    const cardGroup = document.createElement('DIV');
+    document.body.append(cardGroup);        
+
+    cardGroup.setAttribute("id", "nomineeList");
+
+    cardGroup.classList.add('card-group');
+    cardGroup.classList.add('m-5');
+    cardGroup.classList.add('shadow-lg');
+    cardGroup.classList.add('p-5');
+    cardGroup.classList.add('pg-white');
+    cardGroup.classList.add('rounded');
+    cardGroup.classList.add('gap-3');
+
+    for(let [i, each] of nominees.entries()){
+        
+        const nominee = new Nominee(each);
+        nominee.printNomineeCard(cardGroup);
+    }
+}
+
+
 const removePrior = () => {
     if (document.getElementById("toRemove")){
         document.getElementById("toRemove").remove();
@@ -111,6 +110,7 @@ const removePriorText = () => {
         document.getElementById("textToRemove").remove();
     }
 }
+
 class Nominee{
     constructor(imdbId){
         this.imdbId = imdbId;
@@ -145,13 +145,16 @@ class Nominee{
         cardContainer.classList.add('container');
         cardContainer.classList.add('text-center');
         cardContainer.classList.add('rounded');
+        cardContainer.classList.add('px-0');
+
+        
 
 
         cardContainer.appendChild(cardImage);
             cardImage.appendChild(img);
-            cardImage.classList.add('px-3');
+            cardImage.classList.add('px-0');
             cardImage.classList.add('max-height');
-            cardImage.classList.add('py-4');
+            // cardImage.classList.add('py-4');
             cardImage.classList.add('g-0');
                 img.classList.add('card-img-top');
                 img.classList.add('img-fluid');
@@ -181,14 +184,21 @@ class Nominee{
                 //     button.innerHTML = "nominate";
                 //     button.classList.add("btn-primary");
                     console.log(title.src + "'s nomination removed");
-                    if(this.getImdbId){
+                    if(this.getImdbId()){
                         nominees.splice(nominees.indexOf(this.getImdbId()),1);
+                        // if(candidate.getImdbId(this.getImdbId())){
+                            cardContainer.classList.remove("nominated")
+                            button.classList.remove("btn-danger");
+                            button.innerHTML = "nominate";
+                            button.classList.add("btn-primary");
+                            console.log(this.getImdbId());
+                            if(hasFiveNominees(nominees)) printBanner();
+
+
+                        // }
                     }
-                    
                     printNominees();
                     // nominees.filter((item, index) => array.indexOf(item)===index);
-
-           
                     // nominees.filter((item, index) => nominees.indexOf(item)===index);
             })
     }
@@ -226,12 +236,13 @@ class Candidate{
         cardContainer.classList.add('container');
         cardContainer.classList.add('text-center');
         cardContainer.classList.add('rounded');
+        cardContainer.classList.add('px-0');
 
 
         cardContainer.appendChild(cardImage);
             cardImage.appendChild(img);
-            cardImage.classList.add('px-3');
-            cardImage.classList.add('py-4');
+            cardImage.classList.add('p-0');
+            // cardImage.classList.add('py-4');
             cardImage.classList.add('g-0');
                 img.classList.add('card-img-top');
                 img.classList.add('img-fluid');
@@ -259,8 +270,13 @@ class Candidate{
                     button.classList.remove("btn-danger");
                     button.innerHTML = "nominate";
                     button.classList.add("btn-primary");
+                    if(nominees.includes(this.getImdbId())){
                     console.log(title.src + "'s nomination removed");
                     nominees.splice(nominees.indexOf(this.getImdbId()),1);
+                    if (hasFiveNominees(nominees)) printBanner();
+
+                    }
+            
                     // nominees.filter((item, index) => array.indexOf(item)===index);
 
                 } else {
@@ -269,10 +285,15 @@ class Candidate{
                     button.classList.add("btn-danger");
                     button.classList.remove("btn-primary");
                     console.log(title.src + " nominated")
-                    nominees.push(this.getImdbId());
+                    if(nominees.length<6) nominees.push(this.getImdbId());
+                    if(hasFiveNominees()) printBanner();
                     }
                     printNominees();
                     // nominees.filter((item, index) => nominees.indexOf(item)===index);
             })
     }
 }
+
+function hasFiveNominees()if(nominees.length<5 || nominees.length>5)  return false; else return true;};
+
+function printBanner(){alert("You have 5 nominees!")};
