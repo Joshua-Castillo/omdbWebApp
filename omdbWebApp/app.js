@@ -12,15 +12,14 @@ form.addEventListener('submit', async function(e){
         searchTermText.classList.add('mx-5');
         searchTermText.innerHTML="Results for "+ "'" +searchTerm+ "'";
         searchTermText.setAttribute("id", "textToRemove");
-    
-    const res = await axios.get(`http://www.omdbapi.com/?s=${searchTerm}&apikey=10e873c6`);
-
-    console.log(res.data.Search[0]);
+    const res = await axios.get(`http://www.omdbapi.com/?s=${searchTerm}&?type=movie&apikey=10e873c6`);
+    console.log(res.data);
     removePrior();
 
     listCandidates(res.data.Search);
 
 });
+
 class Candidate{
     constructor(imdbId){
         this.imdbId = imdbId;
@@ -35,7 +34,7 @@ class Candidate{
         
         const res = await axios.get(`http://www.omdbapi.com/?i=${this.imdbId}&apikey=10e873c6`);
         console.log(res.data);
-
+        if(res.data.Type === "movie"){
         const cardContainer = document.createElement('DIV');
             const cardImage = document.createElement('DIV');
                 const img = document.createElement('IMG');
@@ -143,7 +142,9 @@ class Candidate{
                     //     printNominees();
                     //     // nominees.filter((item, index) => nominees.indexOf(item)===index);
             })
+        }
     }
+    
 }
 
 const listCandidates = (Search) => {
