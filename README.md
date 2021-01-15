@@ -1,2 +1,3 @@
 # omdbWebApp
-Movie search web application using omdb's api 
+Description: Movie search generator using omdb's api 
+
